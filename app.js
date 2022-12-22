@@ -13,7 +13,8 @@ const articleSchema = {
 }
 const Article = new mongoose.model('Article', articleSchema);
 
-app.get("/article",(req,res)=>{
+app.route("/article")
+.get((req,res)=>{
   Article.find({},(error, found)=>{
     if (!error){
       res.send(found)
@@ -22,12 +23,39 @@ app.get("/article",(req,res)=>{
     }
   })
 })
-app.post('/article',(req,res)=>{
-  console.log(req.body.title);
-  console.log(req.body.context);
+.post((req,res)=>{
+  const newArticle = new Article({
+    title: req.body.title,
+    context:req.body.context
+  })
 })
+.delete((req,res)=>{
+  Article.deleteMany((err)=>{
+    if(!err){
+      console.log("Deleted");
+    }else{
+      console.log("There is problem");
+    }
+  })
+});
 
-
+app.route("/article/:titles")
+.get((req,res)=>{
+    Article.findOne({title:req.params.titles},(err, found)=>{
+      if(found){
+        res.send(found.title);
+      }else{
+        res.send(err);
+      }
+    });
+})
+.patch((req,res)=>{
+  Article.update({title: req.params.titles}, {$set: {context :"", title : ""}}
+);
+})
+.delete((req,res)=>{
+  Artile.deleteOne({title : req.params.titles})
+});
 
 
 
